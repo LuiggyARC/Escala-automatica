@@ -59,10 +59,9 @@ workforce-scheduling-automation
 ---
 
 ## ⚙️ Instalação
-```
+
 O programa não precisa ser instalado o mesmo ja vai completo como um programa do windows so precisa de uma pasta para organizar o banco de dados proprio para organização
 
-```
 ## 🎯 Objetivo do Projeto
 
 Demonstrar automação de processos operacionais utilizando Python e manipulação de dados, aplicando regras de negócio para geração automática de escalas de trabalho.
