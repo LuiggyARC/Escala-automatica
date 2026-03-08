@@ -60,29 +60,9 @@ workforce-scheduling-automation
 
 ## ⚙️ Instalação
 
-### 1. Clonar o repositório
-
-```
-git clone https://github.com/SEU_USUARIO/workforce-scheduling-automation.git
 ```
 
-### 2. Acessar a pasta do projeto
-
-```
-cd workforce-scheduling-automation
-```
-
-### 3. Instalar dependências
-
-```
-pip install -r requirements.txt
-```
-
-### 4. Executar o sistema
-
-```
-python Lscale.py
-```
+## O sistema não precisa ser instalado o mesmo ja é uma programa como qualquer outro do windows só precisa esta em uma pasta para que banco de dados seja criadoe organizado
 
 ---
 
