@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala Editável - 23/02/2026 a 10/05/2026</title>
+    
+        <style>
+            body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                margin: 20px; 
+                background-color: #f0f0f0; 
+                line-height: 1.4;
+            }
+            h1 { 
+                color: #0d47a1; 
+                text-align: center; 
+                margin-bottom: 30px;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            }
+            .filter-container { 
+                text-align: center; 
+                margin: 20px 0; 
+                padding: 20px; 
+                background-color: #ffffff; 
+                border-radius: 10px; 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+                border: 1px solid #e0e0e0;
+            }
+            .filter-container h3 {
+                margin: 0 0 15px 0; 
+                color: #0d47a1;
+                font-size: 16px;
+            }
+            .filter-button { 
+                display: inline-block; 
+                margin: 5px 8px; 
+                padding: 10px 18px; 
+                background-color: #e8e8e8; 
+                color: #333; 
+                border: 2px solid #d0d0d0;
+                border-radius: 8px; 
+                cursor: pointer; 
+                font-size: 13px; 
+                font-weight: 500;
+                transition: all 0.3s ease; 
+                user-select: none;
+            }
+            .filter-button:hover { 
+                background-color: #d8d8d8; 
+                border-color: #b0b0b0;
+                transform: translateY(-1px);
+            }
+            .filter-button.active { 
+                background-color: #0d47a1; 
+                color: white; 
+                border-color: #0d47a1;
+                box-shadow: 0 2px 4px rgba(13, 71, 161, 0.3);
+            }
+            .escala-container { 
+                margin-bottom: 30px; 
+                background-color: #ffffff; 
+                border-radius: 10px; 
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+                overflow: hidden; 
+                border: 1px solid #e0e0e0;
+            }
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+            }
+            th, td { 
+                border: 1px solid #ddd; 
+                padding: 10px 8px; 
+                text-align: center; 
+                font-size: 11px; 
+                min-width: 85px; 
+                height: 40px; 
+                position: relative; 
+                vertical-align: middle;
+            }
+            th { 
+                background-color: #0d47a1; 
+                color: white; 
+                font-weight: bold; 
+                font-size: 10px; 
+                white-space: pre-wrap; 
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+            }
+            .nome-col { 
+                background-color: #37474f; 
+                color: white; 
+                text-align: left; 
+                font-weight: bold; 
+                min-width: 160px; 
+                padding-left: 12px;
+            }
+            .folguista-nome { 
+                font-weight: normal; 
+                font-style: italic;
+            }
+            .editable-cell { 
+                cursor: pointer; 
+                transition: all 0.2s ease;
+                user-select: none;
+            }
+            .editable-cell:hover { 
+                background-color: #f5f5f5 !important; 
+                border-color: #0d47a1 !important;
+                box-shadow: inset 0 0 0 2px #0d47a1;
+            }
+            .folga { 
+                background-color: #1f538d !important; 
+                color: white !important; 
+                font-weight: bold;
+            }
+            .folga-banco-horas { 
+                background-color: #1565c0 !important; 
+                color: white !important; 
+                font-weight: bold;
+            }
+            .cobertura-00-06 { 
+                background-color: #ffa726 !important; 
+                color: black !important; 
+                font-weight: bold;
+            }
+            .folguista-trabalhando { 
+                background-color: #e3f2fd !important; 
+                color: #1565c0 !important; 
+                font-weight: 500;
+            }
+            .funcionario-row { 
+                transition: opacity 0.3s ease, transform 0.2s ease; 
+            }
+            .funcionario-row.hidden { 
+                display: none; 
+            }
+            .dropdown-menu {
+                display: none;
+                position: absolute;
+                background-color: white;
+                border: 2px solid #0d47a1;
+                border-radius: 8px;
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+                z-index: 1000;
+                min-width: 140px;
+                max-height: 250px;
+                overflow-y: auto;
+            }
+            .dropdown-menu div { 
+                padding: 12px 15px; 
+                cursor: pointer; 
+                font-size: 12px; 
+                border-bottom: 1px solid #f0f0f0;
+                transition: background-color 0.2s ease;
+            }
+            .dropdown-menu div:last-child {
+                border-bottom: none;
+            }
+            .dropdown-menu div:hover { 
+                background-color: #e3f2fd; 
+                color: #0d47a1;
+            }
+            .action-buttons {
+                text-align: center;
+                margin: 25px 0;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+            .print-button, .readonly-button { 
+                display: inline-block; 
+                margin: 0 10px; 
+                padding: 12px 24px; 
+                font-size: 14px; 
+                font-weight: 600;
+                cursor: pointer; 
+                border: none; 
+                border-radius: 8px; 
+                transition: all 0.3s ease;
+                text-decoration: none;
+            }
+            .print-button {
+                background-color: #4caf50; 
+                color: white;
+            }
+            .readonly-button {
+                background-color: #2196F3; 
+                color: white;
+            }
+            .print-button:hover { 
+                background-color: #45a049; 
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+            }
+            .readonly-button:hover { 
+                background-color: #1976D2; 
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+            }
+            
+            /* Sistema de Alertas de Conflito Melhorado */
+            .conflict-alert {
+                background: linear-gradient(135deg, #f44336, #d32f2f);
+                color: white;
+                padding: 20px;
+                margin: 25px 0;
+                border-radius: 10px;
+                box-shadow: 0 6px 12px rgba(244, 67, 54, 0.3);
+                display: none;
+                border-left: 5px solid #b71c1c;
+            }
+            .conflict-alert h3 {
+                margin: 0 0 15px 0;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .conflict-item {
+                background-color: rgba(255,255,255,0.15);
+                padding: 12px;
+                margin: 8px 0;
+                border-radius: 6px;
+                font-size: 13px;
+                border-left: 3px solid rgba(255,255,255,0.5);
+            }
+            .conflict-cell {
+                background-color: #f44336 !important;
+                color: white !important;
+                animation: conflictPulse 2s infinite;
+                border: 3px solid #d32f2f !important;
+                font-weight: bold !important;
+            }
+            @keyframes conflictPulse {
+                0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+                70% { box-shadow: 0 0 0 15px rgba(244, 67, 54, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+            }
+            @media print {
+                body { margin: 0; background-color: white; }
+                .escala-container { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; }
+                .action-buttons, .filter-container, .conflict-alert { display: none; }
+                h1 { font-size: 16pt; }
+                th, td { font-size: 9pt; padding: 5px; }
+            }
+        </style>
+        
+</head>
+<body>
+    <h1>📅 Escala Editável (23/02/2026 - 10/05/2026)</h1>
+    
+    <!-- Filtro por Cidade -->
+    <div class="filter-container">
+        <h3>🏙️ Filtrar por Cidade:</h3>
+        <button class="filter-button active" onclick="filterByCidade('todas', event)">Todas as Cidades</button>
+        <button class="filter-button" onclick="filterByCidade('MANAUS', event)">MANAUS</button>
+    </div>
+    
+    <!-- Alerta de Conflitos -->
+    <div id="conflictAlert" class="conflict-alert">
+        <h3>⚠️ CONFLITOS DETECTADOS - Múltiplas pessoas no mesmo horário</h3>
+        <div id="conflictList"></div>
+    </div>
+    
+    <div class="action-buttons">
+        <button class="print-button" onclick="window.print()">🖨️ Imprimir Escala</button>
+        <button class="readonly-button" onclick="gerarHTMLSomenteLeitura()">📄 Gerar Versão Somente Leitura</button>
+    </div>
+<div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>23/2<br>(Seg)</th><th>24/2<br>(Ter)</th><th>25/2<br>(Qua)</th><th>26/2<br>(Qui)</th><th>27/2<br>(Sex)</th><th>28/2<br>(Sab)</th><th>1/3<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260223" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260223')">06:00 - 12:00</td><td id="cell_Igor_black_20260224" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260224')">06:00 - 12:00</td><td id="cell_Igor_black_20260225" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260225')">06:00 - 12:00</td><td id="cell_Igor_black_20260226" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260226')">Folga</td><td id="cell_Igor_black_20260227" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260227')">06:00 - 12:00</td><td id="cell_Igor_black_20260228" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260228')">06:00 - 12:00</td><td id="cell_Igor_black_20260301" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260301')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260223" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260223')">06:00 - 12:00</td><td id="cell_Kael_giante_20260224" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260224')">06:00 - 12:00</td><td id="cell_Kael_giante_20260225" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260225')">06:00 - 12:00</td><td id="cell_Kael_giante_20260226" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260226')">06:00 - 12:00</td><td id="cell_Kael_giante_20260227" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260227')">Folga</td><td id="cell_Kael_giante_20260228" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260228')">06:00 - 12:00</td><td id="cell_Kael_giante_20260301" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260301')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260223" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260223')">06:00 - 12:00</td><td id="cell_MARESSA_20260224" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260224')">06:00 - 12:00</td><td id="cell_MARESSA_20260225" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260225')">06:00 - 12:00</td><td id="cell_MARESSA_20260226" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260226')">06:00 - 12:00</td><td id="cell_MARESSA_20260227" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260227')">06:00 - 12:00</td><td id="cell_MARESSA_20260228" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260228')">06:00 - 12:00</td><td id="cell_MARESSA_20260301" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260301')">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260223" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260223')">06:00 - 12:00</td><td id="cell_NATALY_20260224" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260224')">06:00 - 12:00</td><td id="cell_NATALY_20260225" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260225')">06:00 - 12:00</td><td id="cell_NATALY_20260226" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260226')">06:00 - 12:00</td><td id="cell_NATALY_20260227" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260227')">06:00 - 12:00</td><td id="cell_NATALY_20260228" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260228')">06:00 - 12:00</td><td id="cell_NATALY_20260301" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260301')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>2/3<br>(Seg)</th><th>3/3<br>(Ter)</th><th>4/3<br>(Qua)</th><th>5/3<br>(Qui)</th><th>6/3<br>(Sex)</th><th>7/3<br>(Sab)</th><th>8/3<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260302" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260302')">06:00 - 12:00</td><td id="cell_Igor_black_20260303" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260303')">06:00 - 12:00</td><td id="cell_Igor_black_20260304" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260304')">06:00 - 12:00</td><td id="cell_Igor_black_20260305" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260305')">06:00 - 12:00</td><td id="cell_Igor_black_20260306" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260306')">Folga</td><td id="cell_Igor_black_20260307" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260307')">06:00 - 12:00</td><td id="cell_Igor_black_20260308" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260308')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260302" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260302')">06:00 - 12:00</td><td id="cell_Kael_giante_20260303" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260303')">06:00 - 12:00</td><td id="cell_Kael_giante_20260304" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260304')">06:00 - 12:00</td><td id="cell_Kael_giante_20260305" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260305')">06:00 - 12:00</td><td id="cell_Kael_giante_20260306" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260306')">06:00 - 12:00</td><td id="cell_Kael_giante_20260307" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260307')">Folga</td><td id="cell_Kael_giante_20260308" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260308')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260302" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260302')">06:00 - 12:00</td><td id="cell_MARESSA_20260303" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260303')">06:00 - 12:00</td><td id="cell_MARESSA_20260304" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260304')">06:00 - 12:00</td><td id="cell_MARESSA_20260305" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260305')">06:00 - 12:00</td><td id="cell_MARESSA_20260306" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260306')">06:00 - 12:00</td><td id="cell_MARESSA_20260307" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260307')">06:00 - 12:00</td><td id="cell_MARESSA_20260308" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260308')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260302" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260302')">Folga</td><td id="cell_NATALY_20260303" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260303')">06:00 - 12:00</td><td id="cell_NATALY_20260304" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260304')">06:00 - 12:00</td><td id="cell_NATALY_20260305" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260305')">06:00 - 12:00</td><td id="cell_NATALY_20260306" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260306')">06:00 - 12:00</td><td id="cell_NATALY_20260307" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260307')">06:00 - 12:00</td><td id="cell_NATALY_20260308" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260308')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>9/3<br>(Seg)</th><th>10/3<br>(Ter)</th><th>11/3<br>(Qua)</th><th>12/3<br>(Qui)</th><th>13/3<br>(Sex)</th><th>14/3<br>(Sab)</th><th>15/3<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260309" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260309')">06:00 - 12:00</td><td id="cell_Igor_black_20260310" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260310')">06:00 - 12:00</td><td id="cell_Igor_black_20260311" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260311')">06:00 - 12:00</td><td id="cell_Igor_black_20260312" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260312')">06:00 - 12:00</td><td id="cell_Igor_black_20260313" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260313')">06:00 - 12:00</td><td id="cell_Igor_black_20260314" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260314')">Folga</td><td id="cell_Igor_black_20260315" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260315')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260309" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260309')">06:00 - 12:00</td><td id="cell_Kael_giante_20260310" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260310')">06:00 - 12:00</td><td id="cell_Kael_giante_20260311" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260311')">06:00 - 12:00</td><td id="cell_Kael_giante_20260312" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260312')">06:00 - 12:00</td><td id="cell_Kael_giante_20260313" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260313')">06:00 - 12:00</td><td id="cell_Kael_giante_20260314" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260314')">06:00 - 12:00</td><td id="cell_Kael_giante_20260315" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260315')">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260309" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260309')">Folga</td><td id="cell_MARESSA_20260310" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260310')">06:00 - 12:00</td><td id="cell_MARESSA_20260311" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260311')">06:00 - 12:00</td><td id="cell_MARESSA_20260312" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260312')">06:00 - 12:00</td><td id="cell_MARESSA_20260313" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260313')">06:00 - 12:00</td><td id="cell_MARESSA_20260314" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260314')">06:00 - 12:00</td><td id="cell_MARESSA_20260315" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260315')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260309" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260309')">06:00 - 12:00</td><td id="cell_NATALY_20260310" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260310')">Folga</td><td id="cell_NATALY_20260311" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260311')">06:00 - 12:00</td><td id="cell_NATALY_20260312" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260312')">06:00 - 12:00</td><td id="cell_NATALY_20260313" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260313')">06:00 - 12:00</td><td id="cell_NATALY_20260314" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260314')">06:00 - 12:00</td><td id="cell_NATALY_20260315" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260315')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>16/3<br>(Seg)</th><th>17/3<br>(Ter)</th><th>18/3<br>(Qua)</th><th>19/3<br>(Qui)</th><th>20/3<br>(Sex)</th><th>21/3<br>(Sab)</th><th>22/3<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260316" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260316')">06:00 - 12:00</td><td id="cell_Igor_black_20260317" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260317')">06:00 - 12:00</td><td id="cell_Igor_black_20260318" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260318')">06:00 - 12:00</td><td id="cell_Igor_black_20260319" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260319')">06:00 - 12:00</td><td id="cell_Igor_black_20260320" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260320')">06:00 - 12:00</td><td id="cell_Igor_black_20260321" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260321')">06:00 - 12:00</td><td id="cell_Igor_black_20260322" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260322')">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260316" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260316')">06:00 - 12:00</td><td id="cell_Kael_giante_20260317" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260317')">06:00 - 12:00</td><td id="cell_Kael_giante_20260318" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260318')">06:00 - 12:00</td><td id="cell_Kael_giante_20260319" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260319')">06:00 - 12:00</td><td id="cell_Kael_giante_20260320" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260320')">06:00 - 12:00</td><td id="cell_Kael_giante_20260321" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260321')">06:00 - 12:00</td><td id="cell_Kael_giante_20260322" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260322')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260316" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260316')">06:00 - 12:00</td><td id="cell_MARESSA_20260317" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260317')">Folga</td><td id="cell_MARESSA_20260318" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260318')">06:00 - 12:00</td><td id="cell_MARESSA_20260319" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260319')">06:00 - 12:00</td><td id="cell_MARESSA_20260320" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260320')">06:00 - 12:00</td><td id="cell_MARESSA_20260321" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260321')">06:00 - 12:00</td><td id="cell_MARESSA_20260322" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260322')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260316" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260316')">06:00 - 12:00</td><td id="cell_NATALY_20260317" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260317')">06:00 - 12:00</td><td id="cell_NATALY_20260318" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260318')">Folga</td><td id="cell_NATALY_20260319" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260319')">06:00 - 12:00</td><td id="cell_NATALY_20260320" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260320')">06:00 - 12:00</td><td id="cell_NATALY_20260321" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260321')">06:00 - 12:00</td><td id="cell_NATALY_20260322" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260322')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>23/3<br>(Seg)</th><th>24/3<br>(Ter)</th><th>25/3<br>(Qua)</th><th>26/3<br>(Qui)</th><th>27/3<br>(Sex)</th><th>28/3<br>(Sab)</th><th>29/3<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260323" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260323')">06:00 - 12:00</td><td id="cell_Igor_black_20260324" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260324')">06:00 - 12:00</td><td id="cell_Igor_black_20260325" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260325')">06:00 - 12:00</td><td id="cell_Igor_black_20260326" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260326')">06:00 - 12:00</td><td id="cell_Igor_black_20260327" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260327')">06:00 - 12:00</td><td id="cell_Igor_black_20260328" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260328')">06:00 - 12:00</td><td id="cell_Igor_black_20260329" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260329')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260323" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260323')">Folga</td><td id="cell_Kael_giante_20260324" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260324')">06:00 - 12:00</td><td id="cell_Kael_giante_20260325" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260325')">06:00 - 12:00</td><td id="cell_Kael_giante_20260326" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260326')">06:00 - 12:00</td><td id="cell_Kael_giante_20260327" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260327')">06:00 - 12:00</td><td id="cell_Kael_giante_20260328" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260328')">06:00 - 12:00</td><td id="cell_Kael_giante_20260329" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260329')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260323" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260323')">06:00 - 12:00</td><td id="cell_MARESSA_20260324" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260324')">06:00 - 12:00</td><td id="cell_MARESSA_20260325" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260325')">Folga</td><td id="cell_MARESSA_20260326" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260326')">06:00 - 12:00</td><td id="cell_MARESSA_20260327" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260327')">06:00 - 12:00</td><td id="cell_MARESSA_20260328" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260328')">06:00 - 12:00</td><td id="cell_MARESSA_20260329" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260329')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260323" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260323')">06:00 - 12:00</td><td id="cell_NATALY_20260324" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260324')">06:00 - 12:00</td><td id="cell_NATALY_20260325" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260325')">06:00 - 12:00</td><td id="cell_NATALY_20260326" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260326')">Folga</td><td id="cell_NATALY_20260327" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260327')">06:00 - 12:00</td><td id="cell_NATALY_20260328" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260328')">06:00 - 12:00</td><td id="cell_NATALY_20260329" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260329')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>30/3<br>(Seg)</th><th>31/3<br>(Ter)</th><th>1/4<br>(Qua)</th><th>2/4<br>(Qui)</th><th>3/4<br>(Sex)</th><th>4/4<br>(Sab)</th><th>5/4<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260330" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260330')">Folga</td><td id="cell_Igor_black_20260331" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260331')">06:00 - 12:00</td><td id="cell_Igor_black_20260401" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260401')">06:00 - 12:00</td><td id="cell_Igor_black_20260402" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260402')">06:00 - 12:00</td><td id="cell_Igor_black_20260403" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260403')">06:00 - 12:00</td><td id="cell_Igor_black_20260404" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260404')">06:00 - 12:00</td><td id="cell_Igor_black_20260405" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260405')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260330" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260330')">06:00 - 12:00</td><td id="cell_Kael_giante_20260331" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260331')">Folga</td><td id="cell_Kael_giante_20260401" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260401')">06:00 - 12:00</td><td id="cell_Kael_giante_20260402" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260402')">06:00 - 12:00</td><td id="cell_Kael_giante_20260403" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260403')">06:00 - 12:00</td><td id="cell_Kael_giante_20260404" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260404')">06:00 - 12:00</td><td id="cell_Kael_giante_20260405" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260405')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260330" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260330')">06:00 - 12:00</td><td id="cell_MARESSA_20260331" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260331')">06:00 - 12:00</td><td id="cell_MARESSA_20260401" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260401')">06:00 - 12:00</td><td id="cell_MARESSA_20260402" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260402')">Folga</td><td id="cell_MARESSA_20260403" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260403')">06:00 - 12:00</td><td id="cell_MARESSA_20260404" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260404')">06:00 - 12:00</td><td id="cell_MARESSA_20260405" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260405')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260330" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260330')">06:00 - 12:00</td><td id="cell_NATALY_20260331" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260331')">06:00 - 12:00</td><td id="cell_NATALY_20260401" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260401')">06:00 - 12:00</td><td id="cell_NATALY_20260402" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260402')">06:00 - 12:00</td><td id="cell_NATALY_20260403" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260403')">Folga</td><td id="cell_NATALY_20260404" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260404')">06:00 - 12:00</td><td id="cell_NATALY_20260405" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260405')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>6/4<br>(Seg)</th><th>7/4<br>(Ter)</th><th>8/4<br>(Qua)</th><th>9/4<br>(Qui)</th><th>10/4<br>(Sex)</th><th>11/4<br>(Sab)</th><th>12/4<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260406" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260406')">06:00 - 12:00</td><td id="cell_Igor_black_20260407" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260407')">Folga</td><td id="cell_Igor_black_20260408" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260408')">06:00 - 12:00</td><td id="cell_Igor_black_20260409" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260409')">06:00 - 12:00</td><td id="cell_Igor_black_20260410" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260410')">06:00 - 12:00</td><td id="cell_Igor_black_20260411" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260411')">06:00 - 12:00</td><td id="cell_Igor_black_20260412" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260412')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260406" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260406')">06:00 - 12:00</td><td id="cell_Kael_giante_20260407" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260407')">06:00 - 12:00</td><td id="cell_Kael_giante_20260408" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260408')">Folga</td><td id="cell_Kael_giante_20260409" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260409')">06:00 - 12:00</td><td id="cell_Kael_giante_20260410" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260410')">06:00 - 12:00</td><td id="cell_Kael_giante_20260411" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260411')">06:00 - 12:00</td><td id="cell_Kael_giante_20260412" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260412')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260406" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260406')">06:00 - 12:00</td><td id="cell_MARESSA_20260407" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260407')">06:00 - 12:00</td><td id="cell_MARESSA_20260408" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260408')">06:00 - 12:00</td><td id="cell_MARESSA_20260409" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260409')">06:00 - 12:00</td><td id="cell_MARESSA_20260410" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260410')">Folga</td><td id="cell_MARESSA_20260411" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260411')">06:00 - 12:00</td><td id="cell_MARESSA_20260412" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260412')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260406" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260406')">06:00 - 12:00</td><td id="cell_NATALY_20260407" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260407')">06:00 - 12:00</td><td id="cell_NATALY_20260408" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260408')">06:00 - 12:00</td><td id="cell_NATALY_20260409" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260409')">06:00 - 12:00</td><td id="cell_NATALY_20260410" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260410')">06:00 - 12:00</td><td id="cell_NATALY_20260411" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260411')">Folga</td><td id="cell_NATALY_20260412" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260412')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>13/4<br>(Seg)</th><th>14/4<br>(Ter)</th><th>15/4<br>(Qua)</th><th>16/4<br>(Qui)</th><th>17/4<br>(Sex)</th><th>18/4<br>(Sab)</th><th>19/4<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260413" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260413')">06:00 - 12:00</td><td id="cell_Igor_black_20260414" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260414')">06:00 - 12:00</td><td id="cell_Igor_black_20260415" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260415')">Folga</td><td id="cell_Igor_black_20260416" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260416')">06:00 - 12:00</td><td id="cell_Igor_black_20260417" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260417')">06:00 - 12:00</td><td id="cell_Igor_black_20260418" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260418')">06:00 - 12:00</td><td id="cell_Igor_black_20260419" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260419')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260413" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260413')">06:00 - 12:00</td><td id="cell_Kael_giante_20260414" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260414')">06:00 - 12:00</td><td id="cell_Kael_giante_20260415" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260415')">06:00 - 12:00</td><td id="cell_Kael_giante_20260416" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260416')">Folga</td><td id="cell_Kael_giante_20260417" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260417')">06:00 - 12:00</td><td id="cell_Kael_giante_20260418" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260418')">06:00 - 12:00</td><td id="cell_Kael_giante_20260419" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260419')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260413" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260413')">06:00 - 12:00</td><td id="cell_MARESSA_20260414" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260414')">06:00 - 12:00</td><td id="cell_MARESSA_20260415" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260415')">06:00 - 12:00</td><td id="cell_MARESSA_20260416" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260416')">06:00 - 12:00</td><td id="cell_MARESSA_20260417" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260417')">06:00 - 12:00</td><td id="cell_MARESSA_20260418" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260418')">Folga</td><td id="cell_MARESSA_20260419" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260419')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260413" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260413')">06:00 - 12:00</td><td id="cell_NATALY_20260414" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260414')">06:00 - 12:00</td><td id="cell_NATALY_20260415" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260415')">06:00 - 12:00</td><td id="cell_NATALY_20260416" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260416')">06:00 - 12:00</td><td id="cell_NATALY_20260417" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260417')">06:00 - 12:00</td><td id="cell_NATALY_20260418" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260418')">06:00 - 12:00</td><td id="cell_NATALY_20260419" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260419')">Folga</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>20/4<br>(Seg)</th><th>21/4<br>(Ter)</th><th>22/4<br>(Qua)</th><th>23/4<br>(Qui)</th><th>24/4<br>(Sex)</th><th>25/4<br>(Sab)</th><th>26/4<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260420" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260420')">06:00 - 12:00</td><td id="cell_Igor_black_20260421" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260421')">06:00 - 12:00</td><td id="cell_Igor_black_20260422" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260422')">06:00 - 12:00</td><td id="cell_Igor_black_20260423" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260423')">Folga</td><td id="cell_Igor_black_20260424" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260424')">06:00 - 12:00</td><td id="cell_Igor_black_20260425" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260425')">06:00 - 12:00</td><td id="cell_Igor_black_20260426" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260426')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260420" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260420')">06:00 - 12:00</td><td id="cell_Kael_giante_20260421" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260421')">06:00 - 12:00</td><td id="cell_Kael_giante_20260422" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260422')">06:00 - 12:00</td><td id="cell_Kael_giante_20260423" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260423')">06:00 - 12:00</td><td id="cell_Kael_giante_20260424" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260424')">Folga</td><td id="cell_Kael_giante_20260425" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260425')">06:00 - 12:00</td><td id="cell_Kael_giante_20260426" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260426')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260420" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260420')">06:00 - 12:00</td><td id="cell_MARESSA_20260421" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260421')">06:00 - 12:00</td><td id="cell_MARESSA_20260422" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260422')">06:00 - 12:00</td><td id="cell_MARESSA_20260423" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260423')">06:00 - 12:00</td><td id="cell_MARESSA_20260424" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260424')">06:00 - 12:00</td><td id="cell_MARESSA_20260425" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260425')">06:00 - 12:00</td><td id="cell_MARESSA_20260426" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260426')">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260420" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260420')">06:00 - 12:00</td><td id="cell_NATALY_20260421" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260421')">06:00 - 12:00</td><td id="cell_NATALY_20260422" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260422')">06:00 - 12:00</td><td id="cell_NATALY_20260423" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260423')">06:00 - 12:00</td><td id="cell_NATALY_20260424" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260424')">06:00 - 12:00</td><td id="cell_NATALY_20260425" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260425')">06:00 - 12:00</td><td id="cell_NATALY_20260426" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260426')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>27/4<br>(Seg)</th><th>28/4<br>(Ter)</th><th>29/4<br>(Qua)</th><th>30/4<br>(Qui)</th><th>1/5<br>(Sex)</th><th>2/5<br>(Sab)</th><th>3/5<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260427" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260427')">06:00 - 12:00</td><td id="cell_Igor_black_20260428" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260428')">06:00 - 12:00</td><td id="cell_Igor_black_20260429" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260429')">06:00 - 12:00</td><td id="cell_Igor_black_20260430" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260430')">06:00 - 12:00</td><td id="cell_Igor_black_20260501" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260501')">Folga</td><td id="cell_Igor_black_20260502" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260502')">06:00 - 12:00</td><td id="cell_Igor_black_20260503" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260503')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260427" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260427')">06:00 - 12:00</td><td id="cell_Kael_giante_20260428" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260428')">06:00 - 12:00</td><td id="cell_Kael_giante_20260429" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260429')">06:00 - 12:00</td><td id="cell_Kael_giante_20260430" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260430')">06:00 - 12:00</td><td id="cell_Kael_giante_20260501" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260501')">06:00 - 12:00</td><td id="cell_Kael_giante_20260502" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260502')">Folga</td><td id="cell_Kael_giante_20260503" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260503')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260427" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260427')">06:00 - 12:00</td><td id="cell_MARESSA_20260428" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260428')">06:00 - 12:00</td><td id="cell_MARESSA_20260429" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260429')">06:00 - 12:00</td><td id="cell_MARESSA_20260430" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260430')">06:00 - 12:00</td><td id="cell_MARESSA_20260501" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260501')">06:00 - 12:00</td><td id="cell_MARESSA_20260502" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260502')">06:00 - 12:00</td><td id="cell_MARESSA_20260503" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260503')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260427" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260427')">Folga</td><td id="cell_NATALY_20260428" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260428')">06:00 - 12:00</td><td id="cell_NATALY_20260429" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260429')">06:00 - 12:00</td><td id="cell_NATALY_20260430" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260430')">06:00 - 12:00</td><td id="cell_NATALY_20260501" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260501')">06:00 - 12:00</td><td id="cell_NATALY_20260502" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260502')">06:00 - 12:00</td><td id="cell_NATALY_20260503" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260503')">06:00 - 12:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionário</th>
+<th>4/5<br>(Seg)</th><th>5/5<br>(Ter)</th><th>6/5<br>(Qua)</th><th>7/5<br>(Qui)</th><th>8/5<br>(Sex)</th><th>9/5<br>(Sab)</th><th>10/5<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Igor black </td>
+<td id="cell_Igor_black_20260504" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260504')">06:00 - 12:00</td><td id="cell_Igor_black_20260505" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260505')">06:00 - 12:00</td><td id="cell_Igor_black_20260506" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260506')">06:00 - 12:00</td><td id="cell_Igor_black_20260507" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260507')">06:00 - 12:00</td><td id="cell_Igor_black_20260508" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260508')">06:00 - 12:00</td><td id="cell_Igor_black_20260509" class="editable-cell folga" onclick="showDropdown(event, 'cell_Igor_black_20260509')">Folga</td><td id="cell_Igor_black_20260510" class="editable-cell" onclick="showDropdown(event, 'cell_Igor_black_20260510')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">Kael giante </td>
+<td id="cell_Kael_giante_20260504" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260504')">06:00 - 12:00</td><td id="cell_Kael_giante_20260505" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260505')">06:00 - 12:00</td><td id="cell_Kael_giante_20260506" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260506')">06:00 - 12:00</td><td id="cell_Kael_giante_20260507" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260507')">06:00 - 12:00</td><td id="cell_Kael_giante_20260508" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260508')">06:00 - 12:00</td><td id="cell_Kael_giante_20260509" class="editable-cell" onclick="showDropdown(event, 'cell_Kael_giante_20260509')">06:00 - 12:00</td><td id="cell_Kael_giante_20260510" class="editable-cell folga" onclick="showDropdown(event, 'cell_Kael_giante_20260510')">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">MARESSA </td>
+<td id="cell_MARESSA_20260504" class="editable-cell folga" onclick="showDropdown(event, 'cell_MARESSA_20260504')">Folga</td><td id="cell_MARESSA_20260505" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260505')">06:00 - 12:00</td><td id="cell_MARESSA_20260506" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260506')">06:00 - 12:00</td><td id="cell_MARESSA_20260507" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260507')">06:00 - 12:00</td><td id="cell_MARESSA_20260508" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260508')">06:00 - 12:00</td><td id="cell_MARESSA_20260509" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260509')">06:00 - 12:00</td><td id="cell_MARESSA_20260510" class="editable-cell" onclick="showDropdown(event, 'cell_MARESSA_20260510')">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">NATALY </td>
+<td id="cell_NATALY_20260504" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260504')">06:00 - 12:00</td><td id="cell_NATALY_20260505" class="editable-cell folga" onclick="showDropdown(event, 'cell_NATALY_20260505')">Folga</td><td id="cell_NATALY_20260506" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260506')">06:00 - 12:00</td><td id="cell_NATALY_20260507" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260507')">06:00 - 12:00</td><td id="cell_NATALY_20260508" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260508')">06:00 - 12:00</td><td id="cell_NATALY_20260509" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260509')">06:00 - 12:00</td><td id="cell_NATALY_20260510" class="editable-cell" onclick="showDropdown(event, 'cell_NATALY_20260510')">06:00 - 12:00</td></tr></tbody></table></div><div id="dropdown" class="dropdown-menu"><div onclick="selectOption('06:00 - 12:00')">06:00 - 12:00</div><div onclick="selectOption('12:00 - 18:00')">12:00 - 18:00</div><div onclick="selectOption('18:00 - 00:00')">18:00 - 00:00</div><div onclick="selectOption('00:00 - 06:00')">00:00 - 06:00</div><div onclick="selectOption('Folguista')">Folguista</div><div onclick="selectOption('Folga')">Folga</div><div onclick="selectOption('Folga (Banco de Horas)')">Folga (Banco de Horas)</div><div onclick="selectOption('-')">-</div></div>
+        <script>
+            let currentCellId = null;
+            let dropdown = null;
+            const horariosPadrao = ["06:00 - 12:00", "12:00 - 18:00", "18:00 - 00:00", "00:00 - 06:00", "Folguista"];
+            const nomesFolguistas = [];
+
+            // Inicializar quando DOM carregar
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM carregado, inicializando...');
+                dropdown = document.getElementById('dropdown');
+                if (!dropdown) {
+                    console.error('Elemento dropdown não encontrado!');
+                    return;
+                }
+                
+                // Detectar conflitos iniciais
+                setTimeout(() => {
+                    detectarConflitos();
+                }, 500);
+                
+                console.log('Inicialização concluída');
+            });
+
+            // Função melhorada para filtrar por cidade
+            function filterByCidade(cidadeId, event) {
+                console.log('Filtrando por cidade:', cidadeId);
+                
+                // Remover classe active de todos os botões
+                const buttons = document.querySelectorAll('.filter-button');
+                buttons.forEach(btn => btn.classList.remove('active'));
+                
+                // Adicionar classe active ao botão clicado
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+                
+                // Mostrar/ocultar linhas baseado na cidade
+                const rows = document.querySelectorAll('.funcionario-row');
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    const rowCidade = row.getAttribute('data-cidade') || '';
+                    if (cidadeId === 'todas' || rowCidade === cidadeId) {
+                        row.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+                
+                console.log(`Filtro aplicado: ${visibleCount} funcionários visíveis`);
+                
+                // Redetectar conflitos após filtro
+                setTimeout(() => {
+                    detectarConflitos();
+                }, 100);
+            }
+
+            // Função melhorada para mostrar dropdown
+            function showDropdown(event, cellId) {
+                console.log('Mostrando dropdown para célula:', cellId);
+                
+                if (!dropdown) {
+                    console.error('Dropdown não inicializado!');
+                    return;
+                }
+                
+                // Fechar dropdown anterior se existir
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                }
+                
+                currentCellId = cellId;
+                const cell = document.getElementById(cellId);
+                if (!cell) {
+                    console.error('Célula não encontrada:', cellId);
+                    return;
+                }
+                
+                const rect = cell.getBoundingClientRect();
+                dropdown.style.display = 'block';
+                
+                // Posicionamento melhorado do dropdown
+                let top = rect.bottom + window.scrollY + 5;
+                let left = rect.left + window.scrollX;
+                
+                // Ajustar se sair da tela horizontalmente
+                if (left + dropdown.offsetWidth > window.innerWidth) {
+                    left = window.innerWidth - dropdown.offsetWidth - 10;
+                }
+                if (left < 10) {
+                    left = 10;
+                }
+                
+                // Ajustar se sair da tela verticalmente
+                if (top + dropdown.offsetHeight > window.innerHeight + window.scrollY) {
+                    top = rect.top + window.scrollY - dropdown.offsetHeight - 5;
+                }
+                
+                dropdown.style.top = top + 'px';
+                dropdown.style.left = left + 'px';
+                
+                event.stopPropagation();
+                console.log('Dropdown posicionado em:', { top, left });
+            }
+
+            // Função melhorada para selecionar opção
+            function selectOption(value) {
+                console.log('Opção selecionada:', value, 'para célula:', currentCellId);
+                
+                if (!dropdown || !currentCellId) {
+                    console.error('Dropdown ou célula não definidos!');
+                    return;
+                }
+                
+                const cell = document.getElementById(currentCellId);
+                if (!cell) {
+                    console.error('Célula não encontrada:', currentCellId);
+                    return;
+                }
+                
+                // Atualizar conteúdo da célula
+                cell.textContent = value;
+                
+                // Atualizar estilo da célula
+                updateCellStyle(cell, value);
+                
+                // Fechar dropdown
+                dropdown.style.display = 'none';
+                currentCellId = null;
+                
+                // Verificar conflitos após mudança
+                setTimeout(() => {
+                    detectarConflitos();
+                }, 100);
+                
+                console.log('Célula atualizada com sucesso');
+            }
+
+            // Função melhorada para atualizar estilo da célula
+            function updateCellStyle(cell, value) {
+                const parts = cell.id.split('_');
+                const nome = parts.slice(1, -1).join(' ');
+                const isFolguista = nomesFolguistas.includes(nome);
+
+                // Remover todas as classes de estilo
+                cell.classList.remove('folga', 'folga-banco-horas', 'cobertura-00-06', 'folguista-trabalhando');
+
+                // Aplicar nova classe baseada no valor
+                if (value === "Folga") {
+                    cell.classList.add('folga');
+                } else if (value === "Folga (Banco de Horas)") {
+                    cell.classList.add('folga-banco-horas');
+                } else if (value.includes("(Cob)")) {
+                    cell.classList.add('cobertura-00-06');
+                } else if (isFolguista && value !== '-' && value !== '') {
+                    cell.classList.add('folguista-trabalhando');
+                }
+                
+                console.log('Estilo da célula atualizado:', value);
+            }
+
+            // Função melhorada para detectar conflitos de horário
+            function detectarConflitos() {
+                console.log('Detectando conflitos...');
+                const conflitos = [];
+                const tabelas = document.querySelectorAll('table');
+                
+                // Limpar marcações de conflito anteriores
+                document.querySelectorAll('.conflict-cell').forEach(cell => {
+                    cell.classList.remove('conflict-cell');
+                });
+                
+                tabelas.forEach((tabela, tabelaIndex) => {
+                    const cabecalhos = tabela.querySelectorAll('thead th');
+                    const datas = [];
+                    
+                    // Extrair datas dos cabeçalhos (pular primeira coluna que é nome)
+                    for (let i = 1; i < cabecalhos.length; i++) {
+                        const textoHeader = cabecalhos[i].textContent.trim();
+                        datas.push(textoHeader);
+                    }
+                    
+                    // Para cada data, verificar conflitos POR CIDADE
+                    datas.forEach((data, colIndex) => {
+                        const horariosPorCidade = {}; // Agrupar por cidade
+                        const linhas = tabela.querySelectorAll('tbody tr');
+                        
+                        linhas.forEach(linha => {
+                            // Verificar se a linha está visível (não filtrada)
+                            if (linha.classList.contains('hidden')) return;
+                            
+                            const celulas = linha.querySelectorAll('td');
+                            if (celulas.length > colIndex + 1) {
+                                const nomeCompleto = celulas[0].textContent.trim();
+                                const nome = nomeCompleto.replace('(Folguista)', '').trim();
+                                const horario = celulas[colIndex + 1].textContent.trim();
+                                const cidade = linha.getAttribute('data-cidade') || 'DESCONHECIDA';
+                                
+                                // Ignorar folgas, células vazias e valores especiais
+                                if (horario === 'Folga' || horario === 'Folga (Banco de Horas)' || 
+                                    horario === '-' || horario === '' || 
+                                    horario.includes('Folga') || !horario.includes(':')) {
+                                    return;
+                                }
+                                
+                                // Remover "(Cob)" para comparar horários base
+                                const horarioBase = horario.replace(/\s*\(Cob\)\s*/g, '').trim();
+                                
+                                // Agrupar por cidade e horário
+                                if (!horariosPorCidade[cidade]) {
+                                    horariosPorCidade[cidade] = {};
+                                }
+                                if (!horariosPorCidade[cidade][horarioBase]) {
+                                    horariosPorCidade[cidade][horarioBase] = [];
+                                }
+                                horariosPorCidade[cidade][horarioBase].push({
+                                    nome: nome,
+                                    celula: celulas[colIndex + 1]
+                                });
+                            }
+                        });
+                        
+                        // Verificar conflitos DENTRO DE CADA CIDADE
+                        Object.keys(horariosPorCidade).forEach(cidade => {
+                            const horariosDaCidade = horariosPorCidade[cidade];
+                            Object.keys(horariosDaCidade).forEach(horario => {
+                                const pessoas = horariosDaCidade[horario];
+                                if (pessoas.length > 1) {
+                                    const nomes = pessoas.map(p => p.nome);
+                                    conflitos.push({
+                                        data: data,
+                                        cidade: cidade.replace(/_/g, ' '), // Converter underscores para espaços
+                                        horario: horario,
+                                        funcionarios: nomes,
+                                        tabela: tabelaIndex + 1
+                                    });
+                                    
+                                    // Marcar células em conflito
+                                    pessoas.forEach(pessoa => {
+                                        pessoa.celula.classList.add('conflict-cell');
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+                
+                // Exibir alertas de conflito
+                exibirAlertasConflito(conflitos);
+                console.log('Detecção de conflitos concluída:', conflitos.length, 'conflitos encontrados');
+            }
+
+            // Função melhorada para exibir alertas de conflito
+            function exibirAlertasConflito(conflitos) {
+                const alertContainer = document.getElementById('conflictAlert');
+                const conflictList = document.getElementById('conflictList');
+                
+                if (!alertContainer || !conflictList) {
+                    console.error('Elementos de alerta não encontrados');
+                    return;
+                }
+                
+                if (conflitos.length > 0) {
+                    conflictList.innerHTML = '';
+                    conflitos.forEach((conflito, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'conflict-item';
+                        item.innerHTML = `
+                            <strong>Conflito #${index + 1}</strong><br>
+                            📅 Data: ${conflito.data}<br>
+                            🏙️ Cidade: ${conflito.cidade}<br>
+                            🕐 Horário: ${conflito.horario}<br>
+                            👥 Funcionários: ${conflito.funcionarios.join(', ')}
+                            ${conflito.tabela ? `<br>📊 Tabela: ${conflito.tabela}` : ''}
+                        `;
+                        conflictList.appendChild(item);
+                    });
+                    alertContainer.style.display = 'block';
+                    console.log('Alertas de conflito exibidos');
+                } else {
+                    alertContainer.style.display = 'none';
+                    console.log('Nenhum conflito encontrado');
+                }
+            }
+
+            // Função para gerar HTML somente leitura (melhorada)
+            function gerarHTMLSomenteLeitura() {
+                try {
+                    console.log('Gerando HTML somente leitura...');
+                    
+                    // Coletar dados atuais das tabelas
+                    const dadosEscala = coletarDadosTabelas();
+                    
+                    // Gerar HTML somente leitura
+                    const htmlSomenteLeitura = gerarHTMLVisualizacao(dadosEscala);
+                    
+                    // Criar e baixar arquivo
+                    const blob = new Blob([htmlSomenteLeitura], { type: 'text/html;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'escala_somente_leitura.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('✅ HTML somente leitura gerado com sucesso!\n\nArquivo: escala_somente_leitura.html');
+                    console.log('HTML somente leitura gerado com sucesso');
+                    
+                } catch (error) {
+                    console.error('Erro ao gerar HTML somente leitura:', error);
+                    alert('❌ Erro ao gerar HTML somente leitura: ' + error.message);
+                }
+            }
+
+            // Função melhorada para coletar dados das tabelas
+            function coletarDadosTabelas() {
+                const dados = [];
+                const tabelas = document.querySelectorAll('table');
+                
+                tabelas.forEach((tabela, tabelaIndex) => {
+                    const dadosTabela = {
+                        index: tabelaIndex,
+                        cabecalhos: [],
+                        linhas: []
+                    };
+                    
+                    // Coletar cabeçalhos
+                    const cabecalhos = tabela.querySelectorAll('thead th');
+                    cabecalhos.forEach(th => {
+                        dadosTabela.cabecalhos.push(th.innerHTML);
+                    });
+                    
+                    // Coletar dados das linhas visíveis
+                    const linhas = tabela.querySelectorAll('tbody tr');
+                    linhas.forEach(linha => {
+                        if (linha.classList.contains('hidden')) return; // Pular linhas ocultas
+                        
+                        const dadosLinha = {
+                            cidade: linha.getAttribute('data-cidade') || '',
+                            celulas: []
+                        };
+                        
+                        const celulas = linha.querySelectorAll('td');
+                        celulas.forEach(celula => {
+                            dadosLinha.celulas.push({
+                                conteudo: celula.textContent.trim(),
+                                classes: celula.className
+                            });
+                        });
+                        
+                        dadosTabela.linhas.push(dadosLinha);
+                    });
+                    
+                    dados.push(dadosTabela);
+                });
+                
+                console.log('Dados das tabelas coletados:', dados.length, 'tabelas');
+                return dados;
+            }
+
+            // Função melhorada para gerar HTML de visualização
+            function gerarHTMLVisualizacao(dadosEscala) {
+                const agora = new Date();
+                const dataHora = agora.toLocaleString('pt-BR');
+                
+                // Coletar cidades únicas
+                const cidadesUnicas = new Set();
+                dadosEscala.forEach(tabela => {
+                    tabela.linhas.forEach(linha => {
+                        if (linha.cidade) {
+                            cidadesUnicas.add(linha.cidade);
+                        }
+                    });
+                });
+                
+                let html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escala - Versão Final</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background-color: #f0f0f0; 
+            line-height: 1.4;
+        }
+        h1 { 
+            color: #0d47a1; 
+            text-align: center; 
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+            font-size: 14px;
+        }
+        .escala-container { 
+            margin-bottom: 30px; 
+            background-color: #ffffff; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            overflow: hidden; 
+            border: 1px solid #e0e0e0;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 10px 8px; 
+            text-align: center; 
+            font-size: 11px; 
+            min-width: 85px; 
+            height: 40px; 
+            vertical-align: middle;
+        }
+        th { 
+            background-color: #0d47a1; 
+            color: white; 
+            font-weight: bold; 
+            font-size: 10px; 
+            white-space: pre-wrap; 
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+        }
+        .nome-col { 
+            background-color: #37474f; 
+            color: white; 
+            text-align: left; 
+            font-weight: bold; 
+            min-width: 160px; 
+            padding-left: 12px;
+        }
+        .folguista-nome { 
+            font-weight: normal; 
+            font-style: italic;
+        }
+        .folga { 
+            background-color: #1f538d; 
+            color: white; 
+            font-weight: bold;
+        }
+        .folga-banco-horas { 
+            background-color: #1565c0; 
+            color: white; 
+            font-weight: bold;
+        }
+        .cobertura-00-06 { 
+            background-color: #ffa726; 
+            color: black; 
+            font-weight: bold;
+        }
+        .folguista-trabalhando { 
+            background-color: #e3f2fd; 
+            color: #1565c0; 
+            font-weight: 500;
+        }
+        .city-filter {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        .city-filter select {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: 2px solid #0d47a1;
+            border-radius: 8px;
+            background-color: white;
+            color: #0d47a1;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        .city-filter label {
+            font-weight: bold;
+            margin-right: 15px;
+            color: #0d47a1;
+            font-size: 16px;
+        }
+        .funcionario-row {
+            transition: opacity 0.3s ease;
+        }
+        .funcionario-row.hidden {
+            display: none;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            color: #666;
+            font-size: 13px;
+            border: 1px solid #e0e0e0;
+        }
+        @media print {
+            body { margin: 0; background-color: white; }
+            .escala-container { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; }
+            h1 { font-size: 16pt; }
+            th, td { font-size: 9pt; padding: 5px; }
+            .footer, .city-filter { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <h1>📅 Escala de Trabalho - Versão Final</h1>
+    <div class="subtitle">Gerado em: ${dataHora} | Versão somente leitura com filtro por cidade</div>
+    
+    <!-- Filtro por Cidade Melhorado -->
+    <div class="city-filter">
+        <label for="cityFilter">🏙️ Filtrar por Cidade:</label>
+        <select id="cityFilter" onchange="filtrarPorCidade()">
+            <option value="todas">📍 Todas as Cidades</option>`;
+                
+                // Adicionar opções de cidade
+                Array.from(cidadesUnicas).sort().forEach(cidade => {
+                    const cidadeDisplay = cidade.replace(/_/g, ' ');
+                    html += `<option value="${cidade}">${cidadeDisplay}</option>`;
+                });
+                
+                html += `
+        </select>
+    </div>
+`;
+                
+                // Adicionar tabelas
+                dadosEscala.forEach((tabela, tabelaIndex) => {
+                    html += `<div class="escala-container">
+        <table>
+            <thead>
+                <tr>`;
+                    
+                    tabela.cabecalhos.forEach(cabecalho => {
+                        html += `<th>${cabecalho}</th>`;
+                    });
+                    
+                    html += `</tr>
+            </thead>
+            <tbody>`;
+                    
+                    tabela.linhas.forEach(linha => {
+                        const cidadeAttr = linha.cidade ? `data-cidade="${linha.cidade}"` : '';
+                        html += `<tr class="funcionario-row" ${cidadeAttr}>`;
+                        linha.celulas.forEach(celula => {
+                            html += `<td class="${celula.classes}">${celula.conteudo}</td>`;
+                        });
+                        html += `</tr>`;
+                    });
+                    
+                    html += `</tbody>
+        </table>
+    </div>`;
+                });
+                
+                html += `
+    <script>
+        // Função melhorada para filtrar por cidade
+        function filtrarPorCidade() {
+            const filtro = document.getElementById('cityFilter').value;
+            const linhas = document.querySelectorAll('.funcionario-row');
+            let visibleCount = 0;
+            
+            console.log('Filtrando por cidade (visualização):', filtro);
+            
+            linhas.forEach(linha => {
+                const cidade = linha.getAttribute('data-cidade') || '';
+                if (filtro === 'todas' || cidade === filtro) {
+                    linha.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    linha.classList.add('hidden');
+                }
+            });
+            
+            console.log('Funcionários visíveis após filtro:', visibleCount);
+        }
+        
+        // Aplicar filtro inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('HTML de visualização carregado');
+        });
+    </script>
+    
+    <div class="footer">
+        <p><strong>📊 Escala gerada pelo Sistema Gerador de Escalas v9.2.1</strong></p>
+        <p>Esta é uma versão somente leitura com filtro por cidade. Para edições, utilize o arquivo original editável.</p>
+        <p>Total de funcionários: ${dadosEscala.reduce((total, tabela) => total + tabela.linhas.length, 0)} | Cidades: ${Array.from(cidadesUnicas).join(', ').replace(/_/g, ' ')}</p>
+    </div>
+</body>
+</html>`;
+                
+                return html;
+            }
+
+            // Fechar dropdown ao clicar fora
+            document.addEventListener('click', function(event) {
+                if (dropdown && dropdown.style.display === 'block' && 
+                    !dropdown.contains(event.target) && 
+                    !event.target.classList.contains('editable-cell')) {
+                    dropdown.style.display = 'none';
+                    currentCellId = null;
+                    console.log('Dropdown fechado por clique externo');
+                }
+            });
+
+            // Fechar dropdown com tecla Escape
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && dropdown && dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                    currentCellId = null;
+                    console.log('Dropdown fechado com Escape');
+                }
+            });
+        </script>
+        </body></html>
