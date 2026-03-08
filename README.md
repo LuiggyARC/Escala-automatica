@@ -59,13 +59,10 @@ workforce-scheduling-automation
 ---
 
 ## ⚙️ Instalação
+```
+O programa não precisa ser instalado o mesmo ja vai completo como um programa do windows so precisa de uma pasta para organizar o banco de dados proprio para organização
 
 ```
-
-## O sistema não precisa ser instalado o mesmo ja é uma programa como qualquer outro do windows só precisa esta em uma pasta para que banco de dados seja criadoe organizado
-
----
-
 ## 🎯 Objetivo do Projeto
 
 Demonstrar automação de processos operacionais utilizando Python e manipulação de dados, aplicando regras de negócio para geração automática de escalas de trabalho.
@@ -75,6 +72,7 @@ Este projeto simula uma solução real de automação interna para organizaçõe
 ---
 
 ## 👤 Autor
-Luiggy
+
+Luiggy Alberto
 
 Luiggy
