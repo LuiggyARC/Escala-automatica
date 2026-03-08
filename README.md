@@ -1,4 +1,4 @@
-Sistema de Automação Escala de trabalho
+## Sistema de Automação Escala de trabalho
 
 Sistema desenvolvido em **Python** para geração automática de escalas operacionais com interface gráfica.
 
