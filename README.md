@@ -27,6 +27,7 @@ As escalas geradas podem ser exportadas para **Excel** ou **HTML editável**, fa
 * Exportação da escala para HTML editável
 * Interface gráfica moderna
 * Armazenamento local de dados em JSON
+<img width="1919" height="1015" alt="interface_principal" src="https://github.com/user-attachments/assets/270f52e7-d7d9-45d0-9e8a-93fc5db13cb9" />
 
 ---
 
@@ -69,6 +70,10 @@ Demonstrar automação de processos operacionais utilizando Python e manipulaç�
 Este projeto simula uma solução real de automação interna para organizações que precisam gerenciar turnos e equipes em diferentes localidades.
 
 ---
+<img width="1919" height="1019" alt="Exportação_HTML" src="https://github.com/user-attachments/assets/a4d1860b-da4b-48f4-b588-68277cd73d60" />
+
+<img width="1919" height="1019" alt="Resultado_Escala" src="https://github.com/user-attachments/assets/d2f367e9-2ba1-49fb-9ea9-39fe533c971b" />
+
 
 ## 👤 Autor
 
