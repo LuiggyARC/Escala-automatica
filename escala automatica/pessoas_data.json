@@ -1,0 +1,58 @@
+[
+    {
+        "nome": "Marcio",
+        "cidade": "MANAUS",
+        "horario": "12:00 - 18:00",
+        "folga_inicial": 24,
+        "banco_horas": false
+    },
+    {
+        "nome": "lucas",
+        "cidade": "MANAUS",
+        "horario": "18:00 - 00:00",
+        "folga_inicial": 25,
+        "banco_horas": false
+    },
+    {
+        "nome": "antonio",
+        "cidade": "MANAUS",
+        "horario": "Folguista",
+        "folga_inicial": 0,
+        "banco_horas": true
+    },
+    {
+        "nome": "evelin",
+        "cidade": "AMAPA",
+        "horario": "06:00 - 12:00",
+        "folga_inicial": 27,
+        "banco_horas": false
+    },
+    {
+        "nome": "cesar",
+        "cidade": "RORAIMA",
+        "horario": "06:00 - 12:00",
+        "folga_inicial": 28,
+        "banco_horas": false
+    },
+    {
+        "nome": "judas",
+        "cidade": "RORAIMA",
+        "horario": "12:00 - 18:00",
+        "folga_inicial": 1,
+        "banco_horas": false
+    },
+    {
+        "nome": "kamila",
+        "cidade": "RORAIMA",
+        "horario": "18:00 - 00:00",
+        "folga_inicial": 3,
+        "banco_horas": false
+    },
+    {
+        "nome": "ana",
+        "cidade": "AMAPA",
+        "horario": "12:00 - 18:00",
+        "folga_inicial": 1,
+        "banco_horas": false
+    }
+]
