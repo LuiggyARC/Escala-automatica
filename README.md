@@ -1,6 +1,6 @@
 # 📅 Gerador Automático de Escalas
 
-Aplicação desktop desenvolvida em Python para cadastro de funcionários, geração automática de escalas de trabalho, controle de folgas, cobertura de turnos e exportação dos resultados para Excel e HTML.
+Aplicação desktop desenvolvida em Python para cadastro de funcionários, geração automática de escalas de trabalho, controle de folgas, cobertura de turnos e exportação para Excel e HTML.
 
 O projeto foi criado para reduzir o trabalho manual na montagem de escalas operacionais distribuídas entre diferentes cidades e equipes.
 
@@ -9,52 +9,42 @@ O projeto foi criado para reduzir o trabalho manual na montagem de escalas opera
 ## 🚀 Funcionalidades
 
 - Cadastro e remoção de funcionários
-- Organização de funcionários por cidade
+- Organização por cidade ou unidade
 - Definição de horários de trabalho
 - Configuração de folga inicial
 - Controle de banco de horas
-- Cadastro de funcionários folguistas
-- Tratamento específico para supervisão
-- Geração automática da escala por período
+- Cadastro de folguistas
+- Regras específicas para supervisão
+- Geração automática por intervalo de datas
 - Cobertura automática de turnos
-- Edição manual das células da escala
-- Filtro de resultado por cidade
+- Edição manual da escala
+- Filtro por cidade
 - Detecção de conflitos
 - Exportação para Excel
 - Exportação para HTML
-- Persistência local dos dados em JSON
-- Interface gráfica com modo claro e escuro
+- Persistência local em JSON
+- Interface com modo claro e escuro
+- Layout redimensionável e janela centralizada
 
 ---
 
 ## 🖥️ Interface
 
-A aplicação utiliza uma interface desktop construída com `CustomTkinter`.
+A interface foi construída com `CustomTkinter` e organizada em duas áreas principais:
 
-### Tela de configuração
+### Configurações
 
-Nesta tela é possível:
+Permite selecionar o período, cadastrar funcionários, definir cidade, horário, folga inicial e banco de horas.
 
-- selecionar o período da escala;
-- cadastrar funcionários;
-- definir cidade e horário;
-- configurar folgas;
-- selecionar banco de horas;
-- gerar a escala.
+### Resultado
 
-![Tela de configuração](assets/interface-configuracao.png)
-
-### Resultado da escala
-
-A escala é apresentada em blocos semanais, com possibilidade de edição manual e filtragem por cidade.
-
-![Resultado da escala](assets/interface-resultado.png)
+Apresenta a escala em blocos semanais, permite edição manual, filtro por cidade, detecção de conflitos e exportação.
 
 ---
 
 ## 🛠️ Tecnologias utilizadas
 
-### Aplicação principal
+### Aplicação desktop
 
 - Python
 - CustomTkinter
@@ -70,51 +60,33 @@ A escala é apresentada em blocos semanais, com possibilidade de edição manual
 - TypeScript
 - JavaScript compilado
 
-O navegador não executa TypeScript diretamente. O arquivo:
-
-```text
-typescript/escala.ts
-```
-
-é compilado para:
-
-```text
-typescript/escala.js
-```
-
-O JavaScript compilado é utilizado no arquivo HTML gerado pelo sistema.
+O navegador não executa TypeScript diretamente. O arquivo `escala.ts` é compilado para `escala.js`, que é carregado pelo Python durante a geração do HTML.
 
 ---
 
-## 📁 Estrutura do projeto
+## 📁 Estrutura principal
 
 ```text
 Escala-automatica/
 ├── mainescala.py
-├── README.md
+├── escala.ts
+├── escala.js
+├── package.json
+├── tsconfig.json
 ├── requirements.txt
-├── assets/
-│   ├── interface-configuracao.png
-│   └── interface-resultado.png
-└── typescript/
-    ├── escala.ts
-    ├── escala.js
-    ├── package.json
-    ├── tsconfig.json
-    └── README.md
+├── README.md
+└── pessoas_data.json
 ```
 
-> O arquivo `pessoas_data.json` contém os dados cadastrados localmente. Em ambientes reais, recomenda-se adicioná-lo ao `.gitignore` para evitar o envio de informações pessoais ao GitHub.
+> O arquivo `pessoas_data.json` é criado localmente e pode conter dados de funcionários. Em uso real, recomenda-se mantê-lo no `.gitignore`.
 
 ---
 
 ## ⚙️ Pré-requisitos
 
-Antes de executar o projeto, instale:
-
 - Python 3.10 ou superior
-- Node.js, somente para modificar e recompilar o TypeScript
-- Git, para controle de versão
+- Node.js, apenas para modificar e recompilar o TypeScript
+- Git
 
 ---
 
@@ -124,15 +96,10 @@ Clone o repositório:
 
 ```bash
 git clone https://github.com/LuiggyARC/Escala-automatica.git
-```
-
-Entre na pasta:
-
-```bash
 cd Escala-automatica
 ```
 
-Crie um ambiente virtual:
+Crie um ambiente virtual.
 
 ### Windows
 
@@ -154,7 +121,7 @@ Instale as dependências:
 pip install -r requirements.txt
 ```
 
-Caso ainda não exista um `requirements.txt`, instale manualmente:
+Caso o arquivo de dependências ainda não esteja disponível:
 
 ```bash
 pip install customtkinter pandas tkcalendar openpyxl
@@ -164,29 +131,23 @@ pip install customtkinter pandas tkcalendar openpyxl
 
 ## ▶️ Como executar
 
-Execute:
-
 ```bash
 python mainescala.py
 ```
 
-No Windows, também pode utilizar:
+No Windows também é possível usar:
 
 ```bash
 py mainescala.py
 ```
 
+O arquivo `escala.js` deve permanecer na mesma pasta que `mainescala.py`.
+
 ---
 
 ## 🔷 Compilação do TypeScript
 
-Entre na pasta:
-
-```bash
-cd typescript
-```
-
-Instale as dependências:
+Instale as dependências do projeto:
 
 ```bash
 npm install
@@ -198,26 +159,25 @@ Compile o TypeScript:
 npm run build
 ```
 
-Para recompilar automaticamente durante alterações:
+Para recompilar automaticamente após cada alteração:
 
 ```bash
 npm run watch
+```
+
+O fluxo é:
+
+```text
+escala.ts → compilação TypeScript → escala.js → HTML exportado
 ```
 
 ---
 
 ## 📋 Regras de negócio
 
-O sistema considera diferentes categorias de funcionários.
-
 ### Funcionários regulares
 
-Possuem:
-
-- cidade;
-- horário fixo;
-- folga inicial;
-- opção de banco de horas.
+Possuem cidade, horário fixo, folga inicial e opção de banco de horas.
 
 ### Folguistas
 
@@ -225,7 +185,7 @@ São utilizados para cobrir funcionários regulares em dias de folga.
 
 ### Supervisão
 
-A supervisão utiliza horários específicos:
+Utiliza horários específicos:
 
 ```text
 06:00 - 14:00
@@ -235,17 +195,7 @@ A supervisão utiliza horários específicos:
 
 ### Cobertura da madrugada
 
-Quando um funcionário do turno:
-
-```text
-00:00 - 06:00
-```
-
-está de folga, o sistema pode atribuir a cobertura a um funcionário do turno:
-
-```text
-18:00 - 00:00
-```
+Quando um funcionário do turno `00:00 - 06:00` está de folga, o sistema pode atribuir a cobertura a um funcionário do turno `18:00 - 00:00`.
 
 A cobertura é identificada como:
 
@@ -259,7 +209,7 @@ A cobertura é identificada como:
 
 ### Excel
 
-O sistema gera uma planilha `.xlsx` contendo:
+A planilha gerada contém:
 
 - funcionários nas linhas;
 - datas nas colunas;
@@ -267,12 +217,11 @@ O sistema gera uma planilha `.xlsx` contendo:
 
 ### HTML
 
-A exportação HTML possui:
+A exportação HTML oferece:
 
 - visualização no navegador;
-- filtros por cidade;
-- identificação visual das folgas;
-- identificação das coberturas;
+- filtro por cidade;
+- identificação visual de folgas e coberturas;
 - botão de impressão;
 - detecção de conflitos no navegador.
 
@@ -282,12 +231,7 @@ A exportação HTML possui:
 
 A geração automática auxilia na montagem da escala, mas o resultado deve ser revisado antes do uso oficial.
 
-As regras de jornada, descanso e banco de horas podem variar conforme:
-
-- empresa;
-- convenção coletiva;
-- contrato de trabalho;
-- legislação aplicável.
+As regras de jornada, descanso e banco de horas podem variar conforme empresa, contrato, convenção coletiva e legislação aplicável.
 
 O sistema não substitui a validação do setor responsável pela escala.
 
@@ -295,9 +239,7 @@ O sistema não substitui a validação do setor responsável pela escala.
 
 ## 🔐 Privacidade
 
-Evite publicar dados reais de funcionários no repositório.
-
-Adicione ao `.gitignore`:
+Recomenda-se adicionar ao `.gitignore`:
 
 ```gitignore
 pessoas_data.json
@@ -308,40 +250,21 @@ __pycache__/
 node_modules/
 ```
 
-Uma alternativa é disponibilizar apenas um arquivo de exemplo:
-
-```text
-pessoas_data.example.json
-```
-
-Exemplo:
-
-```json
-[
-  {
-    "nome": "Funcionario Exemplo",
-    "cidade": "MANAUS",
-    "horario": "06:00 - 12:00",
-    "folga_inicial": 1,
-    "banco_horas": false
-  }
-]
-```
+Também é possível disponibilizar apenas um arquivo de exemplo, como `pessoas_data.example.json`.
 
 ---
 
 ## 🧭 Melhorias futuras
 
-- Separar a interface da lógica de negócio
+- Separar interface e lógica de negócio
 - Criar testes automatizados
 - Configurar quantidade mínima por turno
-- Melhorar a distribuição de coberturas entre folguistas
+- Equilibrar a distribuição de coberturas
 - Gerar relatórios de horas trabalhadas
 - Criar histórico de escalas
 - Adicionar banco de dados
 - Criar versão web
 - Gerar instalador para Windows
-- Criar validações trabalhistas configuráveis
 
 ---
 
@@ -357,6 +280,6 @@ Exemplo:
 
 ## 📄 Licença
 
-Este projeto está disponível para fins de estudo, portfólio e desenvolvimento.
+Projeto desenvolvido para estudo, portfólio e evolução técnica.
 
-Para uso comercial ou redistribuição, recomenda-se definir uma licença formal no repositório.
+Para uso comercial ou redistribuição, recomenda-se adicionar uma licença formal ao repositório.
