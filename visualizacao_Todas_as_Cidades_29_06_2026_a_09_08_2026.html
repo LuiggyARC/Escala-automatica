@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizacao da Escala</title>
+    
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f0f0; }
+            h1 { color: #0d47a1; text-align: center; }
+            .filter-container { 
+                text-align: center; 
+                margin: 20px 0; 
+                padding: 15px; 
+                background-color: #ffffff; 
+                border-radius: 8px; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            }
+            .filter-button { 
+                display: inline-block; 
+                margin: 5px; 
+                padding: 8px 16px; 
+                background-color: #e0e0e0; 
+                color: #333; 
+                border: none; 
+                border-radius: 5px; 
+                cursor: pointer; 
+                font-size: 12px; 
+                transition: all 0.3s ease; 
+            }
+            .filter-button:hover { 
+                background-color: #d0d0d0; 
+            }
+            .filter-button.active { 
+                background-color: #0d47a1; 
+                color: white; 
+            }
+            .escala-container { margin-bottom: 25px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: center; font-size: 11px; min-width: 80px; height: 35px; }
+            th { background-color: #0d47a1; color: white; font-weight: bold; font-size: 10px; white-space: pre-wrap; }
+            .nome-col { background-color: #37474f; color: white; text-align: left; font-weight: bold; min-width: 150px; }
+            .folguista-nome { font-weight: normal; }
+            .supervisao-nome { background-color: #9c27b0; color: white; }
+            .folga { background-color: #1f538d; color: white; }
+            .folga-banco-horas { background-color: #1f538d; color: white; }
+            .cobertura-00-06 { background-color: #4fc3f7; color: black; }
+            .folguista-trabalhando { background-color: #f5f5f5; color: black; }
+            .supervisao-trabalhando { background-color: #9c27b0; color: white; }
+            .funcionario-row { transition: opacity 0.3s ease; }
+            .funcionario-row.hidden { display: none; }
+            .print-button { display: block; margin: 20px auto; padding: 10px 20px; font-size: 14px; cursor: pointer; background-color: #4caf50; color: white; border: none; border-radius: 5px; }
+            
+            .conflict-alert {
+                background-color: #f44336;
+                color: white;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                display: none;
+            }
+            .conflict-alert h3 {
+                margin: 0 0 10px 0;
+                font-size: 16px;
+            }
+            .conflict-section {
+                margin: 10px 0;
+                padding: 8px;
+                background-color: rgba(255,255,255,0.1);
+                border-radius: 4px;
+            }
+            .conflict-section h4 {
+                margin: 0 0 5px 0;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            .conflict-item {
+                background-color: rgba(255,255,255,0.05);
+                padding: 6px;
+                margin: 3px 0;
+                border-radius: 3px;
+                font-size: 11px;
+            }
+            .conflict-cell {
+                background-color: #f44336 !important;
+                color: white !important;
+                animation: pulse 1.5s infinite;
+                border: 2px solid #d32f2f !important;
+            }
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+                70% { box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+            }
+            @media print {
+                body { margin: 0; background-color: white; }
+                .escala-container { box-shadow: none; border: 1px solid #ccc; margin-bottom: 15px; }
+                .print-button, .filter-container { display: none; }
+                h1 { font-size: 16pt; }
+                th, td { font-size: 9pt; padding: 5px; }
+            }
+        </style>
+        
+</head>
+<body>
+    <h1>Visualizacao da Escala (29/06/2026 - 09/08/2026)</h1>
+    
+    <div class="filter-container">
+        <h3 style="margin: 0 0 15px 0; color: #0d47a1;">Filtrar por Cidade:</h3>
+        <button class="filter-button active" data-cidade-filtro="todas">Todas as Cidades</button>
+        <button class="filter-button" data-cidade-filtro="MANAUS">MANAUS</button>
+    </div>
+    
+    <div id="conflictAlert" class="conflict-alert">
+        <h3>⚠️ CONFLITOS DETECTADOS</h3>
+        <div id="conflictList"></div>
+    </div>
+    
+    <button id="printButton" class="print-button">Imprimir Escala</button>
+<div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>29/6<br>(Seg)</th><th>30/6<br>(Ter)</th><th>1/7<br>(Qua)</th><th>2/7<br>(Qui)</th><th>3/7<br>(Sex)</th><th>4/7<br>(Sab)</th><th>5/7<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>6/7<br>(Seg)</th><th>7/7<br>(Ter)</th><th>8/7<br>(Qua)</th><th>9/7<br>(Qui)</th><th>10/7<br>(Sex)</th><th>11/7<br>(Sab)</th><th>12/7<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class=" folga">Folga</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class=" folga">Folga</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class=" folga">Folga</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>13/7<br>(Seg)</th><th>14/7<br>(Ter)</th><th>15/7<br>(Qua)</th><th>16/7<br>(Qui)</th><th>17/7<br>(Sex)</th><th>18/7<br>(Sab)</th><th>19/7<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class="">06:00 - 12:00</td><td class=" folga">Folga</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class=" folga">Folga</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class=" folga">Folga</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>20/7<br>(Seg)</th><th>21/7<br>(Ter)</th><th>22/7<br>(Qua)</th><th>23/7<br>(Qui)</th><th>24/7<br>(Sex)</th><th>25/7<br>(Sab)</th><th>26/7<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class=" folga">Folga</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class=" folga">Folga</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class=" folga">Folga</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>27/7<br>(Seg)</th><th>28/7<br>(Ter)</th><th>29/7<br>(Qua)</th><th>30/7<br>(Qui)</th><th>31/7<br>(Sex)</th><th>1/8<br>(Sab)</th><th>2/8<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class=" folga">Folga</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class=" folga">Folga</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class=" folga">Folga</td><td class=" folga">Folga</td></tr></tbody></table></div><div class="escala-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="nome-col">Funcionario</th>
+<th>3/8<br>(Seg)</th><th>4/8<br>(Ter)</th><th>5/8<br>(Qua)</th><th>6/8<br>(Qui)</th><th>7/8<br>(Sex)</th><th>8/8<br>(Sab)</th><th>9/8<br>(Dom)</th></tr></thead><tbody><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdgf</td>
+<td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td><td class=" folga">Folga</td><td class="">06:00 - 12:00</td><td class="">06:00 - 12:00</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfg</td>
+<td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class="">12:00 - 18:00</td><td class=" folga">Folga</td><td class=" folga">Folga</td></tr><tr class="funcionario-row" data-cidade="MANAUS">
+                    <td class="nome-col ">sdfsc</td>
+<td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class="">18:00 - 00:00</td><td class=" folga">Folga</td></tr></tbody></table></div><script>
+"use strict";
+const selecionarTodos = (seletor) => Array.from(document.querySelectorAll(seletor));
+const textoDoElemento = (elemento) => elemento?.textContent?.trim() ?? '';
+const nomeSemMarcadores = (texto) => texto
+    .replace('(Folguista)', '')
+    .replace('(Supervisao)', '')
+    .trim();
+const formatarCidade = (cidadeId) => cidadeId.replaceAll('_', ' ').replaceAll('-', ' ');
+function filtrarPorCidade(cidadeId, botaoSelecionado) {
+    selecionarTodos('.filter-button').forEach((botao) => {
+        botao.classList.toggle('active', botao === botaoSelecionado);
+    });
+    selecionarTodos('.funcionario-row').forEach((linha) => {
+        const cidadeDaLinha = linha.dataset.cidade ?? '';
+        const deveExibir = cidadeId === 'todas' || cidadeDaLinha === cidadeId;
+        linha.classList.toggle('hidden', !deveExibir);
+    });
+    detectarConflitos();
+}
+function detectarConflitos() {
+    const conflitos = [];
+    selecionarTodos('.conflict-cell').forEach((celula) => {
+        celula.classList.remove('conflict-cell');
+    });
+    selecionarTodos('table').forEach((tabela) => {
+        const cabecalhos = Array.from(tabela.querySelectorAll('thead th'));
+        const datas = cabecalhos.slice(1).map((cabecalho) => textoDoElemento(cabecalho));
+        datas.forEach((data, indiceColuna) => {
+            const horariosPorCidade = {};
+            const folgasPorCidade = {};
+            const linhas = Array.from(tabela.querySelectorAll('tbody tr'));
+            linhas.forEach((linha) => {
+                if (linha.classList.contains('hidden')) {
+                    return;
+                }
+                const celulas = Array.from(linha.querySelectorAll('td'));
+                const celulaHorario = celulas[indiceColuna + 1];
+                if (!celulaHorario || !celulas[0]) {
+                    return;
+                }
+                const nome = nomeSemMarcadores(textoDoElemento(celulas[0]));
+                const horario = textoDoElemento(celulaHorario);
+                const cidade = linha.dataset.cidade ?? 'sem_cidade';
+                const pessoa = { nome, celula: celulaHorario };
+                if (horario.includes('Folga')) {
+                    (folgasPorCidade[cidade] ??= []).push(pessoa);
+                    return;
+                }
+                if (horario !== '-' && horario !== '' && horario.includes(':')) {
+                    const horarioBase = horario.replace('(Cob)', '').trim();
+                    horariosPorCidade[cidade] ??= {};
+                    (horariosPorCidade[cidade][horarioBase] ??= []).push(pessoa);
+                }
+            });
+            Object.entries(horariosPorCidade).forEach(([cidade, horarios]) => {
+                Object.entries(horarios).forEach(([horario, pessoas]) => {
+                    if (pessoas.length <= 1) {
+                        return;
+                    }
+                    conflitos.push({
+                        tipo: 'horario',
+                        data,
+                        horario,
+                        cidade: formatarCidade(cidade),
+                        funcionarios: pessoas.map(({ nome }) => nome),
+                    });
+                    pessoas.forEach(({ celula }) => celula.classList.add('conflict-cell'));
+                });
+            });
+            Object.entries(folgasPorCidade).forEach(([cidade, pessoas]) => {
+                if (pessoas.length <= 1) {
+                    return;
+                }
+                conflitos.push({
+                    tipo: 'folga',
+                    data,
+                    horario: 'Folga',
+                    cidade: formatarCidade(cidade),
+                    funcionarios: pessoas.map(({ nome }) => nome),
+                });
+                pessoas.forEach(({ celula }) => celula.classList.add('conflict-cell'));
+            });
+        });
+    });
+    exibirAlertasConflito(conflitos);
+}
+function criarItemConflito(conflito) {
+    const item = document.createElement('div');
+    item.className = 'conflict-item';
+    const linhas = conflito.tipo === 'horario'
+        ? [
+            `📅 ${conflito.data}`,
+            `🏙️ Cidade: ${conflito.cidade}`,
+            `🕐 Horário: ${conflito.horario}`,
+            `👥 Funcionários: ${conflito.funcionarios.join(', ')}`,
+        ]
+        : [
+            `📅 ${conflito.data}`,
+            `🏙️ Cidade: ${conflito.cidade}`,
+            '🏖️ Múltiplas folgas no mesmo dia',
+            `👥 Funcionários: ${conflito.funcionarios.join(', ')}`,
+        ];
+    linhas.forEach((linha, indice) => {
+        item.append(document.createTextNode(linha));
+        if (indice < linhas.length - 1) {
+            item.append(document.createElement('br'));
+        }
+    });
+    return item;
+}
+function criarSecaoConflitos(titulo, conflitos) {
+    const secao = document.createElement('div');
+    secao.className = 'conflict-section';
+    const cabecalho = document.createElement('h4');
+    cabecalho.textContent = titulo;
+    secao.appendChild(cabecalho);
+    conflitos.forEach((conflito) => secao.appendChild(criarItemConflito(conflito)));
+    return secao;
+}
+function exibirAlertasConflito(conflitos) {
+    const alertContainer = document.querySelector('#conflictAlert');
+    const conflictList = document.querySelector('#conflictList');
+    if (!alertContainer || !conflictList) {
+        console.warn('Contêiner de conflitos não encontrado no HTML.');
+        return;
+    }
+    conflictList.replaceChildren();
+    if (conflitos.length === 0) {
+        alertContainer.style.display = 'none';
+        return;
+    }
+    const conflitosHorario = conflitos.filter(({ tipo }) => tipo === 'horario');
+    const conflitosFolga = conflitos.filter(({ tipo }) => tipo === 'folga');
+    if (conflitosHorario.length > 0) {
+        conflictList.appendChild(criarSecaoConflitos('🕐 CONFLITOS DE HORÁRIO:', conflitosHorario));
+    }
+    if (conflitosFolga.length > 0) {
+        conflictList.appendChild(criarSecaoConflitos('🏖️ CONFLITOS DE FOLGA:', conflitosFolga));
+    }
+    alertContainer.style.display = 'block';
+}
+function configurarEventos() {
+    selecionarTodos('[data-cidade-filtro]').forEach((botao) => {
+        botao.addEventListener('click', () => {
+            filtrarPorCidade(botao.dataset.cidadeFiltro ?? 'todas', botao);
+        });
+    });
+    document.querySelector('#printButton')?.addEventListener('click', () => {
+        window.print();
+    });
+    detectarConflitos();
+}
+document.addEventListener('DOMContentLoaded', configurarEventos, { once: true });
+
+</script></body></html>
