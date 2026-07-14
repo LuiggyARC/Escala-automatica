@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+pessoas_data.json
+escala_*.xlsx
+visualizacao_*.html
